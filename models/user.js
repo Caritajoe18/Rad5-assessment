@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-//import { Todo } from "./todo.js"; 
+//import {Todo}  from "./todo.js"; 
 
 const UserInstance = new mongoose.Schema({
     
@@ -11,6 +11,10 @@ const UserInstance = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false, 
     },
     todos: [
         {
