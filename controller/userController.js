@@ -5,14 +5,16 @@ import {
   registerUserSchema,
   loginUserSchema,
 } from "../validators/userValid.js";
+import fs from "fs";
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 
 const jwtsecret = process.env.JWT_SECRET;
 
 // if (!jwtsecret) {
 //   throw new Error("JWT_SECRET is not defined in the environment variables.");
 // }
-
-
 
 export async function register(req, res) {
   try {
@@ -67,9 +69,10 @@ export async function login(req, res) {
     if (!user) return res.status(400).json({ error: "Invalid credentials" });
 
     const { _id } = user;
-    console.log("JWT_SECRETlll:", jwtsecret);
-    const token = jwt.sign({ _id }, process.env.JWT_SECRET, { expiresIn: "14d" });
-
+    //console.log("JWT_SECRETlll:", jwtsecret);
+    const token = jwt.sign({ _id }, process.env.JWT_SECRET, {
+      expiresIn: "14d",
+    });
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (validPassword) {
@@ -88,5 +91,41 @@ export async function login(req, res) {
     return res.status(500).json({
       error: "Server error",
     });
+  }
+}
+
+export async function webHooks(req, res) {
+  try {
+    const { eventType, data } = req.body;
+
+    if (!eventType || !data) {
+      return res.status(400).json({ error: 'Invalid webhook payload' });
+    }
+
+    const logMessage = `Received event: ${eventType}\nData: ${JSON.stringify(
+      data,
+      null,
+      2
+    )}\n`;
+
+    
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+
+    const logFilePath = path.join(__dirname, '../logs/webhook.log');
+
+    
+    const logsDir = path.dirname(logFilePath);
+    if (!fs.existsSync(logsDir)) {
+      fs.mkdirSync(logsDir, { recursive: true });
+    }
+
+    fs.appendFileSync(logFilePath, logMessage);
+
+    console.log(`Event received: ${eventType}`);
+    res.status(200).json({ message: 'Event received successfully' });
+  } catch (err) {
+    console.error('Error processing webhook:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 }

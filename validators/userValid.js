@@ -45,10 +45,11 @@ export const createTodoSchema = Joi.object({
   description: Joi.string().required().messages({
     "string.empty": "Description is required",
   }),
-  dueDate: Joi.string().required().messages({
+  dueDate: Joi.string().isoDate().required().messages({
     "string.empty": "Due date is required",
+    "string.isoDate": "Due date must be in YYYY-MM-DD format",
   }),
-});
+}).options({ abortEarly: false }); 
 
 export const updateTodoSchema = Joi.object({
   title: Joi.string().messages({

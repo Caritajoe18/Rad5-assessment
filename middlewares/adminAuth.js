@@ -1,15 +1,13 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.js"; 
+import Admin from "../models/admin.js";
+import User from "../models/user.js";
 
-
-
-
-export async function userAuth(req, res, next) {
+export async function adminAuth(req, res, next) {
   const authorization = req.headers.authorization;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     return res.status(401).json({
-      error: "Invalid token, kindly sign in as a user",
+      error: "Invalid token, kindly sign in as an admin",
     });
   }
 
@@ -24,20 +22,21 @@ export async function userAuth(req, res, next) {
       });
     }
 
-    const { _id } = verified;
-    
-    const user = await User.findById(_id);
+    const { username, isAdmin } = verified;
 
-    if (!user) {
+    // Check in both User and Admin collections by username
+    const admin = await Admin.findOne({ username }) || await User.findOne({ username });
+
+    if (!admin || !admin.isAdmin) {
       return res.status(401).json({
-        error: "User not found",
+        error: "Admin not found or not authorized",
       });
     }
 
-    req.user = verified;
+    req.admin = verified;
     next();
   } catch (error) {
-    console.error("Error verifying token:", error);
+    console.error("Error verifying admin token:", error);
     return res.status(500).json({
       error: "Server error",
     });
