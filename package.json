@@ -16,12 +16,7 @@
     "dev": "nodemon index.js",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "jest"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.[t|j]sx?$": "babel-jest"
-    }
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --collectCoverage --detectOpenHandles"
 
   },
   "dependencies": {

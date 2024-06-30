@@ -16,21 +16,21 @@
   - Request body is includes username and password.
   
 - **Create a new todo item:**
-  - `POST /todos`
+  - `POST /todo`
   - Request header is includes the JWT token for authentication.
   - Request body is includes title, description, and dueDate.
 
 - **Retrieve all todo items for the authenticated user:**
-  - `GET /todos`
+  - `GET /todo`
   - Request header is includes the JWT token for authentication.
   
 - **Update a todo item:**
-  - `PUT /todos/{id}`
+  - `PUT /todo/{id}`
   - Request header is includes the JWT token for authentication.
   - Request body is includes title, description, dueDate, and status.
   
 - **Delete a todo item:**
-  - `DELETE /todos/{id}`
+  - `DELETE /todo/{id}`
   - Request header is includes the JWT token for authentication.
 
 
@@ -63,3 +63,5 @@
 - **View All Todos:**
   - `GET /admin/todos`
   - Request header is includes the admin JWT token for authentication.
+
+

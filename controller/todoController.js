@@ -116,11 +116,13 @@ export const deleteTodo = async (req, res) => {
 
 export const getNextTasks = async (req, res) => {
   try {
-    const userId = req.user._id;
+    //const userId = req.user._id;
 
-    //console.log("userId:", userId); 
-    
-    const user = await User.findById(userId).populate("todos");
+    //console.log("userId:", userId);
+
+    const user = await User.findById(req.user._id).populate("todos");
+
+    console.log("the user", user);
 
     if (!user) {
       return res.status(404).json({ error: "No todos found for this user" });
@@ -131,11 +133,16 @@ export const getNextTasks = async (req, res) => {
     });
 
     user.todos.sort((a, b) => a.dueDate - b.dueDate);
-
+    if (user.todos.length < 3) {
+      return res.status(200).json({
+        msg: " Your tasks are not up to three",
+        todos: user.todos,
+      });
+    }
     const firstThreeTodos = user.todos.slice(0, 3);
 
     return res.status(200).json({
-      msg: "Todos fetched successfully",
+      msg: "Your First three tasks fetched successfully",
       todos: firstThreeTodos,
     });
   } catch (error) {
