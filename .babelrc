@@ -2,6 +2,9 @@
     {
         "presets": ["@babel/preset-env"]
     }
+
+    //apparently, babel was no longer used for testing. I figured a way to test Ecma module............. You can remove this file
+    
   
   
   

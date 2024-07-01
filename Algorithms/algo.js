@@ -1,4 +1,4 @@
-function sumOfDigits(N) {
+export function sumOfDigits(N) {
   let sum = 0;
 
   const numAsStr = N.toString();
@@ -13,7 +13,7 @@ function sumOfDigits(N) {
 
 //console.log(sumOfDigits(389))
 
-function minCost(jewels) {
+export function minCost(jewels) {
   let totalCost = 0;
   // counting each letter
   for (let i = 0; i < jewels.length; i++) {
@@ -29,7 +29,7 @@ function minCost(jewels) {
 
 //console.log(minCost("erfrt"));
 
-function luckyLetter(letters) {
+export function luckyLetter(letters) {
   const input = letters.toLowerCase();
   if (input.length !== 10) {
     return "letter must be 10 in number";
@@ -40,33 +40,30 @@ function luckyLetter(letters) {
 
 //testing strictly if letters are 10 and all lowercase
 
-function LuckyLetter(letters) {
-  // Validate input length and character type using regex
-  if (letters.length !== 10 || !/^[a-z]+$/.test(letters)) {
-    return "Invalid input: String must be 10 lowercase letters (a-z).";
-  }
+// export function LuckyLetter(letters) {
+//   // Validate input length and character type using regex
+//   if (letters.length !== 10 || !/^[a-z]+$/.test(letters)) {
+//     return "Invalid input: String must be 10 lowercase letters (a-z).";
+//   }
 
-  return letters[6];
-}
+//   return letters[6];
+// }
 //console.log(LuckyLetter("outofsigh"))
 
-function isCountCorrect(cats, dogs, legs) {
-  let minDogLegs;
-  let maxDogLegs;
+export function isCountCorrect(C, D, L) {
+  const maxLegs = 4 * (C + D);
+  let minLegs;
 
-  if (dogs >= 2 * cats) {
-    minDogLegs = dogs - 2 * cats;
+  if (C > 2 * D) {
+      minLegs = 4 * (C - 2 * D + D);
   } else {
-    minDogLegs = 0;
+      minLegs = 4 * D;
   }
 
-  maxDogLegs = dogs * 4;
-
-  if (legs >= minDogLegs * 4 + cats * 2 && legs <= maxDogLegs * 4) {
-    return "Yes";
+  if (minLegs <= L && L <= maxLegs && L % 4 === 0) {
+      return "Yes";
   } else {
-    return "No";
+      return "No";
   }
 }
 
-//console.log(isCountCorrect(3));

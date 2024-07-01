@@ -352,3 +352,9 @@ Data: {
   "usernmame": "Cariie",
   "email": "Babygirl@gmail.com"
 }
+Received event: user_created
+Data: {
+  "user_id": 123,
+  "username": "johndoe",
+  "email": "johndoe@example.com"
+}
