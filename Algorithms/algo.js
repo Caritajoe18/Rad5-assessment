@@ -55,15 +55,39 @@ export function isCountCorrect(C, D, L) {
   let minLegs;
 
   if (C > 2 * D) {
-      minLegs = 4 * (C - 2 * D + D);
+    minLegs = 4 * (C - 2 * D + D);
   } else {
-      minLegs = 4 * D;
+    minLegs = 4 * D;
   }
 
   if (minLegs <= L && L <= maxLegs && L % 4 === 0) {
-      return "Yes";
+    return "Yes";
   } else {
-      return "No";
+    return "No";
   }
 }
 
+export function validCard(num) {
+  if (!/^[0-9]+$/.test(num)) {
+    return "Input must be a string of numbers";
+  }
+  if (num.length < 13 || num.length > 16) {
+    return "Input length must be from 13 to 16";
+  }
+  let cardNum = num.split("").map(Number);
+
+  for (let i = cardNum.length - 1; i >= 0; i--) {
+    if ((cardNum.length - 1 - i) % 2 == 1) {
+      cardNum[i] *= 2;
+      if (cardNum[i] > 9) {
+        cardNum[i] -= 9;
+      }
+    }
+  }
+  //return cardNum;
+  const isValid = cardNum.reduce((a, b) => a + b);
+  //return isValid
+  return isValid % 10 == 0 ? "Valid" : "Invalid";
+}
+
+// console.log(validCard("5500000080067"))
