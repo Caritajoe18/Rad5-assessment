@@ -1,4 +1,4 @@
-import { sumOfDigits, luckyLetter, isCountCorrect, minCost } from "../Algorithms/algo.js";
+import { sumOfDigits, luckyLetter, isCountCorrect, minCost, validCard } from "../Algorithms/algo.js";
 
 describe("sumOfDigits function", () => {
     test("should return the correct sum of digits", () => {
@@ -40,6 +40,12 @@ describe("sumOfDigits function", () => {
       expect(isCountCorrect(0, 0, 1)).toBe("No");
       expect(isCountCorrect(3)).toBe("No");
     });
+
+    test("should return the validity of a credit card number", ()=>{
+      expect(validCard('79927398713')).toBe('Input length must be from 13 to 16');
+      expect(validCard('7uyrygv678')).toBe('Input must be a string of numbers')
+      expect(validCard('5500000000000004')).toBe('Valid')
+    })
   });
 
   
