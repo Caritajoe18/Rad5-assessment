@@ -39,6 +39,7 @@ Ensure you have the following software installed on your machine:
     PORT=yourport
     JWT_SECRET=yourSecret
     ```
+    check .env.example file 
 
 4. **Start the server:**
 
