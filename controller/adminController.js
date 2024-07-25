@@ -52,7 +52,7 @@ export const adminLogin = async (req, res) => {
         isAdmin: adminUser.isAdmin,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "14d" }
     );
 
     res.status(200).json({

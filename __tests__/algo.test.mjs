@@ -1,4 +1,6 @@
 import { sumOfDigits, luckyLetter, isCountCorrect, minCost, validCard } from "../Algorithms/algo.js";
+import {describe, test, expect } from '@jest/globals';
+
 
 describe("sumOfDigits function", () => {
     test("should return the correct sum of digits", () => {

@@ -6,15 +6,9 @@ import {
   loginUserSchema,
 } from "../validators/userValid.js";
 import fs from "fs";
-import path from 'path';
-import { fileURLToPath } from 'url';
+import path from "path";
+import { fileURLToPath } from "url";
 
-
-const jwtsecret = process.env.JWT_SECRET;
-
-// if (!jwtsecret) {
-//   throw new Error("JWT_SECRET is not defined in the environment variables.");
-// }
 
 export async function register(req, res) {
   try {
@@ -99,7 +93,7 @@ export async function webHooks(req, res) {
     const { eventType, data } = req.body;
 
     if (!eventType || !data) {
-      return res.status(400).json({ error: 'Invalid webhook payload' });
+      return res.status(400).json({ error: "Invalid webhook payload" });
     }
 
     const logMessage = `Received event: ${eventType}\nData: ${JSON.stringify(
@@ -108,13 +102,11 @@ export async function webHooks(req, res) {
       2
     )}\n`;
 
-    
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
 
-    const logFilePath = path.join(__dirname, '../logs/webhook.log');
+    const logFilePath = path.join(__dirname, "../logs/webhook.log");
 
-    
     const logsDir = path.dirname(logFilePath);
     if (!fs.existsSync(logsDir)) {
       fs.mkdirSync(logsDir, { recursive: true });
@@ -123,9 +115,9 @@ export async function webHooks(req, res) {
     fs.appendFileSync(logFilePath, logMessage);
 
     console.log(`Event received: ${eventType}`);
-    res.status(200).json({ message: 'Event received successfully' });
+    res.status(200).json({ message: "Event received successfully" });
   } catch (err) {
-    console.error('Error processing webhook:', err);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("Error processing webhook:", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }

@@ -1,6 +1,7 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
 
+
 export default {
   languageOptions: {
     globals: {
@@ -8,5 +9,6 @@ export default {
       process: true,
     },
   },
+  
   ...pluginJs.configs.recommended,
 };
