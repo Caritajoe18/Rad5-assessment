@@ -1,9 +1,12 @@
 export default {
+  transform: {
+    '^.+\\.mjs$': 'babel-jest',
+  },
     moduleFileExtensions: [
       "mjs",
       "js",
     ],
-    testRegex: `test\.mjs$`,
+    testRegex: `test.mjs$`,
     transform: {},
   testEnvironment: "node",
   testTimeout: 80000,

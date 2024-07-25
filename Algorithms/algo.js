@@ -52,7 +52,7 @@ export function luckyLetter(letters) {
 
 export function isCountCorrect(C, D, L) {
   const maxLegs = 4 * (C + D);
-  let minLegs;
+  let minLegs= 4 * D;
 
   if (C > 2 * D) {
     minLegs = 4 * (C - 2 * D + D);
@@ -60,12 +60,14 @@ export function isCountCorrect(C, D, L) {
     minLegs = 4 * D;
   }
 
-  if (minLegs <= L && L <= maxLegs && L % 4 === 0) {
+  if (L >= minLegs && L <= maxLegs && L % 4 === 0) {
     return "Yes";
   } else {
     return "No";
   }
 }
+
+//console.log(isCountCorrect(2,1,8))
 
 export function validCard(num) {
   if (!/^[0-9]+$/.test(num)) {
@@ -90,4 +92,4 @@ export function validCard(num) {
   return isValid % 10 == 0 ? "Valid" : "Invalid";
 }
 
-// console.log(validCard("5500000080067"))
+// console.log(validCard("55000000080067"));
