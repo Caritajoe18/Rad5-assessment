@@ -1,23 +1,23 @@
 import { createTodoSchema, updateTodoSchema } from "../validators/userValid.js";
 import Todo from "../models/todo.js";
-import User from "../models/user.js";
+//import User from "../models/user.js";
 
 export const createTodo = async (req, res) => {
   try {
-    // Validate the incoming request body
+    
     const { error } = createTodoSchema.validate(req.body);
 
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    // Create a new Todo item
+    
     const todo = await Todo.create({
       ...req.body,
       user: req.user._id,
     });
 
-    // Return the created todo with a success message
+  
     return res.status(201).json({
       msg: "Todo created successfully",
       todo,
