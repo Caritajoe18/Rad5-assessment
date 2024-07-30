@@ -4,20 +4,17 @@ import Todo from "../models/todo.js";
 
 export const createTodo = async (req, res) => {
   try {
-    
     const { error } = createTodoSchema.validate(req.body);
 
     if (error) {
       return res.status(400).json({ error: error.details[0].message });
     }
 
-    
     const todo = await Todo.create({
       ...req.body,
       user: req.user._id,
     });
 
-  
     return res.status(201).json({
       msg: "Todo created successfully",
       todo,
@@ -31,7 +28,7 @@ export const createTodo = async (req, res) => {
 export const getTodos = async (req, res) => {
   try {
     const userId = req.user._id;
-    const todos = await Todo.find({ user: userId }).populate('user');
+    const todos = await Todo.find({ user: userId }).populate("user");
 
     if (todos.length == 0) {
       return res.status(200).json({ msg: "No todos found for this user" });
@@ -51,22 +48,33 @@ export const updateTodo = async (req, res) => {
     const { id } = req.params;
     const { title, description, dueDate, status } = req.body;
 
-    const validateTodo = updateTodoSchema.validate(req.body);
-    if (validateTodo.error) {
+    const { error } = updateTodoSchema.validate(req.body);
+    if (error) {
       return res.status(400).json({
-        error: validateTodo.error.details[0].message,
+        error: error.details[0].message,
       });
     }
 
-    const updatedTodo = await Todo.findByIdAndUpdate(
-      id,
+    const todo = await Todo.findById(id);
+    if (!todo) {
+      return res.status(404).json({ error: "Todo not found" });
+    }
+
+    if (todo.user.toString() !== req.user.id) {
+      return res.status(403).json({
+        error: "You are not authorized to update this todo",
+      });
+    }
+
+    const updatedTodo = await Todo.findOneAndUpdate(
+      { _id: id },
       { title, description, dueDate, status },
       { new: true }
     );
 
     if (!updatedTodo) {
       return res.status(404).json({
-        error: "Task not found",
+        error: "Task not found after update",
       });
     }
 
@@ -86,6 +94,19 @@ export const deleteTodo = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const todo = await Todo.findById(id);
+
+    if (!todo) {
+      return res.status(404).json({ error: "Todo not found" });
+    }
+    //console.log(todo, "ttttttt");
+
+    if (todo.user.toString() !== req.user.id) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to delete this todo" });
+    }
+
     const deletedTodo = await Todo.findByIdAndDelete(id);
 
     if (!deletedTodo) {
@@ -102,18 +123,13 @@ export const deleteTodo = async (req, res) => {
   }
 };
 
-
 export const getNextTasks = async (req, res) => {
   try {
     //console.log(req.user, "uuuuuu");
 
-    
     const tasks = await Todo.find({ user: req.user._id })
       .sort({ dueDate: 1 })
       .limit(3);
-
-      //console.log("tasksss", tasks)
-
 
     if (tasks.length < 3) {
       return res.status(200).json({
