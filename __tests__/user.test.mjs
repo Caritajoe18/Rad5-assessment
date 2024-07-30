@@ -27,6 +27,46 @@ const dbDisconnect = async () => {
 beforeAll(async () => await dbConnect());
 afterAll(async () => await dbDisconnect());
 
+afterEach(async () => {
+  const collections = mongoose.connection.collections;
+  for (const key in collections) {
+    const collection = collections[key];
+    await collection.deleteMany({});
+  }
+});
+
+let auth = {};
+
+beforeEach(async function() {
+  // Hash the password
+  const hashedPassword = await bcrypt.hash("secret", 1);
+
+  // Insert the user into the database
+  const user = new User({
+    username: "test",
+    password: hashedPassword
+  });
+  await user.save();
+
+
+  const response = await request(app)
+    .post("/login")
+    .send({
+      username: "test",
+      password:"password13",
+      confirm_password: "password13"
+    });
+
+
+  auth.token = response.body.token;
+  auth.curr_user_id = user._id.toString();
+});
+
+
+
+
+
+////////////////
 describe("User Controller", () => {
   test("GET / should fetch all the users", async () => {
     const users = await User.find();
@@ -118,19 +158,19 @@ describe("Login ", () => {
     await User.deleteMany();
   });
 
-  // test("should login successfully", async () => {
-  //   const res = await request(app)
-  //     .post("/auth/login")
-  //     .send({
-  //       username: "testuser",
-  //       password: "password12",
-  //     });
+  test("should login successfully", async () => {
+    const res = await request(app)
+      .post("/auth/login")
+      .send({
+        username: "testuser",
+        password: "password12",
+      });
 
-  //   expect(res.status).toBe(200);
-  //   expect(res.body).toHaveProperty("msg", "user login successful");
-  //   expect(res.body).toHaveProperty("token");
-  //   expect(res.body.user).toHaveProperty("username", "testuser");
-  // });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("msg", "user login successful");
+    expect(res.body).toHaveProperty("token");
+    expect(res.body.user).toHaveProperty("username", "testuser");
+  });
   test('if Password is not provided', async()=>{
     const user = {
       username: "Carita Baby",

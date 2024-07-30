@@ -3,13 +3,16 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import createError from "http-errors";
-//import dotenv from "dotenv";
+import dotenv from "dotenv";
 import bodyParser from "body-parser";
 //import connectDB from "./db.js";
 import userRoutes from "./routes/userRoutes.js";
 import todoRoutes from "./routes/todoRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import webhookRoute from "./routes/webhookRoute.js";
+
+
+dotenv.config();
 
 const app = express();
 
