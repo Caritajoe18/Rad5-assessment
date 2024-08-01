@@ -4,7 +4,7 @@ import User from "../models/user.js";
 export async function userAuth(req, res, next) {
   try {
     if (process.env.NODE_ENV == "test") {
-      console.log("Test environment detected, bypassing authentication.");
+      //console.log("Test environment detected, bypassing authentication.");
       req.user = { _id: "mockUserId" };
       return next();
     }

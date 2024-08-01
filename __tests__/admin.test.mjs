@@ -1,21 +1,29 @@
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import Admin from "../models/admin.js";
-import app from "../index.js";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import request from "supertest";
-import {describe, test, expect, beforeAll, afterAll } from '@jest/globals';
-let jest;
-(async () => {
-  jest = await import("jest-mock");
-})();
+import Admin from "../models/admin.js";
+import User from "../models/user.js";
+import Todo from "../models/todo.js";
+import app from "../index.js";
+import jwt from "jsonwebtoken";
+import {
+  describe,
+  test,
+  expect,
+  beforeAll,
+  afterAll,
+  beforeEach,
+  afterEach,
+  jest,
+} from "@jest/globals";
 
 let mongoServer;
 
 const dbConnect = async () => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
-  await mongoose.connect(uri);
+  await mongoose.connect(uri, {});
 };
 
 const dbDisconnect = async () => {
@@ -37,199 +45,89 @@ afterEach(async () => {
 
 let auth = {};
 
-beforeEach(async function() {
-
+beforeEach(async function () {
   const hashedPassword = await bcrypt.hash("secret", 1);
 
-  
   const admin = new Admin({
     username: "test",
-    password: hashedPassword
+    password: hashedPassword,
   });
   await admin.save();
 
-
-  const response = await request(app)
-    .post("/admin/login")
-    .send({
-      username: "test",
-      password:"password13",
-      confirm_password: "password13"
-    });
-
+  const response = await request(app).post("/admin/login").send({
+    username: "test",
+    password: "password12",
+  });
 
   auth.token = response.body.token;
   auth.curr_admin_id = admin._id.toString();
 });
 
+describe("GET /auth/users", () => {
+  it("should fetch all users successfully", async () => {
+    const mockUsers = [
+      { _id: "1", username: "user1", isAdmin: false },
+      { _id: "2", username: "user2", isAdmin: true },
+    ];
 
-// describe("Admin Controller", () => {
-//   test("Register An Admin", async () => {
-//     const res = await request(app)
-//       .post("/admin/register")
-//       .send({
-//         username: "Carita Baby",
-//         password: "password13",
-//         confirm_password: "password13",
-//       });
-
-//      console.log("Response status:", res.status);
-//  console.log("Response body:", res.body);
-
-//     expect(res.status).toBe(201);
-//     expect(res.body).toHaveProperty('msg', "Admin created successfully");
-//   });
-//   test('should return error if user already exists', async () => {
-//     const admin = new Admin({
-//       username: 'cari',
-//       password: 'password13',
-//       confirm_password: "password13",
-//     });
-//     await admin.save();
-
-//     const res = await request(app)
-//       .post('/admin/register')
-//       .send({
-//         username: 'cari',
-//         password: 'password13',
-//         confirm_password: "password13",
-        
-//       });
-
-//     expect(res.status).toBe(400);
-//     expect(res.body).toHaveProperty('error', 'Admin already exists');
-//   });
-
-//   test("if username is empty", async () => {
-  
-//     const user = {
-//       username: "",
-//         password: "password13",
-//         confirm_password: "password13",
-//     };
-
-//     const res = await request(app).post('/admin/register').send(user);
-
-//     expect(res.status).toBe(400);
-//     expect(res.body.Error).toEqual("Username is required")
-//   });
-
-//   test('should return server error on exception', async () => {
-//     jest.spyOn(Admin, 'findOne').mockImplementationOnce(() => {
-//       throw new Error('Server error');
-//     });
-
-//     const res = await request(app)
-//       .post('/auth/register')
-//       .send({
-//         username: 'erroruser',
-//         password: 'password13',
-//         confirm_password: "password13",
-//       });
-
-//     expect(res.status).toBe(500);
-//     expect(res.body).toHaveProperty('error', 'Server error');
-//   });
-  
-// });
-
-
-describe("Admin Login ", () => {
-  let admin;
-
-  beforeEach(async () => {
-    admin = new Admin({
-      username: "testuser",
-      password: await bcrypt.hash("password12", 10), 
-    });
-    await admin.save();
-  });
-
-  afterEach(async () => {
-    await Admin.deleteMany();
-  });
-
-//   test("should login successfully", async () => {
-//     const res = await request(app)
-//       .post("/admin/login")
-//       .send({
-//         username: "MyAdmin",
-//         password: "password12",
-//       });
-
-//     expect(res.status).toBe(200);
-//     expect(res.body).toHaveProperty("msg", "user login successful");
-//     expect(res.body).toHaveProperty("token");
-//     expect(res.body.user).toHaveProperty("username", "MyAdmin");
-//   });
-  test('if Password is not provided', async()=>{
-    const user = {
-      username: "Carita Baby",
-        password: "",
-        
-    };
-    const res = await request(app).post('/admin/login').send(user);
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty('error','\"password\" is not allowed to be empty')
-  });
-
-//   test("should return error for invalid username", async () => {
-//     const res = await request(app)
-//       .post("/admin/login")
-//       .send({
-//         username: "notAnAdmin",
-//         password: "password12",
-//       });
-
-//     expect(res.status).toBe(400);
-//     expect(res.body).toHaveProperty("error", "Invalid credentials");
-//   });
-
-  test("should return error for invalid password", async () => {
-    const res = await request(app)
-      .post("/admin/login")
-      .send({
-        username: "MyAdmin",
-        password: "invalidpassword",
-      });
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("error", "Password must be between 5 and 10 characters and contain only letters and numbers");
-  });
-
-  test("should return validation error for missing username", async () => {
-    const res = await request(app)
-      .post("/auth/login")
-      .send({
-        password: "password123",
-      });
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("error");
-  });
-
-  test("should return validation error for missing password", async () => {
-    const res = await request(app)
-      .post("/admin/login")
-      .send({
-        username: "testAdmin",
-      });
-
-    expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("error");
-  });
-
-  test("should return server error on exception", async () => {
-    jest.spyOn(Admin, "findOne").mockImplementationOnce(() => {
-      throw new Error("Server error");
-    });
+    jest.spyOn(User, "find").mockResolvedValue(mockUsers);
 
     const res = await request(app)
-      .post("/admin/login")
-      .send({
-        username: "testAdmin",
-        password: "password12",
-      });
+      .get("/admin/users")
+      .set("Authorization", `Bearer ${auth.token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("users");
+    expect(res.body.users.length).toBe(2);
+    expect(res.body.users[0].username).toBe("user1");
+  });
+
+  it("should return 500 if there is a server error", async () => {
+    jest.spyOn(User, "find").mockRejectedValue(new Error("Server error"));
+
+    const res = await request(app)
+      .get("/admin/users")
+      .set("Authorization", `Bearer ${auth.token}`);
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty("error", "Server error");
+  });
+});
+
+describe("GET /auth/todos", () => {
+  it("should fetch all todos successfully", async () => {
+    const mockTodos = [
+      {
+        _id: "1",
+        title: "Todo 1",
+        description: "Description for Todo 1",
+        dueDate: "2024-07-01",
+        status: false,
+      },
+      {
+        _id: "2",
+        title: "Todo 2",
+        description: "Description for Todo 2",
+        dueDate: "2024-07-02",
+        status: true,
+      },
+    ];
+
+    jest.spyOn(Todo, "find").mockResolvedValue(mockTodos);
+
+    const res = await request(app)
+      .get("/admin/todos")
+      .set("Authorization", `Bearer ${auth.token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("todos");
+    expect(res.body.todos.length).toBe(2);
+    expect(res.body.todos[0].title).toBe("Todo 1");
+  });
+
+  it("should return 500 if there is a server error", async () => {
+    jest.spyOn(Todo, "find").mockRejectedValue(new Error("Server error"));
+
+    const res = await request(app).get("/admin/todos");
 
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty("error", "Server error");

@@ -21,8 +21,9 @@ export const adminLogin = async (req, res) => {
     const user = await User.findOne({ username });
     const admin = await Admin.findOne({ username });
 
-    console.log(`User found: ${user}`);
-    console.log(`Admin found: ${admin}`);
+    //console.log(`User found: ${user}`);
+    //console.log(`Admin found: ${admin}`);
+
 
     let isAdminUser = false;
     let adminUser = null;
@@ -42,7 +43,7 @@ export const adminLogin = async (req, res) => {
     const validPassword = await bcrypt.compare(password, adminUser.password);
 
     if (!validPassword) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(400).json({ error: "Invalid credentials" });
     }
 
     const token = jwt.sign(
@@ -60,6 +61,9 @@ export const adminLogin = async (req, res) => {
       user: adminUser,
       token,
     });
+
+    //console.log("Token:", token);
+
   } catch (error) {
     console.error("Admin login error:", error);
     res.status(500).json({ error: "Server error" });
@@ -85,3 +89,5 @@ export const getAllTodos = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
+
+
