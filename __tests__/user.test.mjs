@@ -4,11 +4,11 @@ import User from "../models/user.js";
 import app from "../index.js";
 import bcrypt from 'bcrypt';
 import request from "supertest";
-import {describe, test, expect, beforeAll, afterAll } from '@jest/globals';
-let jest;
-(async () => {
-  jest = await import("jest-mock");
-})();
+import {describe, test, expect, beforeAll, afterAll,jest } from '@jest/globals';
+// let jest;
+// (async () => {
+//   jest = await import("jest-mock");
+// })();
 
 let mongoServer;
 
